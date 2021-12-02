@@ -10,22 +10,39 @@ require(["esri/config","esri/Map", "esri/views/MapView", "esri/layers/FeatureLay
           basemap: "streets-vector"
         });
 
-        const fl = new FeatureLayer({
-            url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Enriched%20USA%20Major%20Cities/FeatureServer"
-        });
-
-
-
-        map.add(fl, 0);
-        // not sure if I need to add the below for anything...I got lost in a see of documentation.
-        // fl.load().then();
-
         const view = new MapView({
             container: "viewDiv",
             map: map,
             zoom: 4,
             center: [253, 42]
         });
+
+        // renderer that will style the information from the "majorCities" featureLayer. Remember to call out the renderer in the FeatureLayer object.
+        const citiesRenderer = {
+            "type": "simple",
+            symbol: {
+                type: "simple-marker",
+                color: "salmon",
+                outline: {
+                    width: 0.5,
+                    color: "black"
+                }
+            }
+        }
+
+        // Feature layer focusing on major cities in the US.
+        const majorCities = new FeatureLayer({
+            url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Enriched%20USA%20Major%20Cities/FeatureServer",
+            renderer: citiesRenderer,
+            opacity: 0.5
+        });
+
+
+
+        map.add(majorCities, 0);
+        // not sure if I need to add the below for anything...I got lost in a see of documentation.
+        // fl.load().then();
+
 });
 
 console.log("did we make it through?");
