@@ -1,5 +1,4 @@
-console.log("just keep going.");
-console.log("testing js connection to index.");
+console.log("That's it. just keep going.");
 
 
 require(["esri/config",
@@ -46,13 +45,27 @@ require(["esri/config",
         "type": "simple",
         symbol: {
             type: "simple-marker",
-            color: "salmon",
+            color: "green",
             outline: {
                 width: 0.5,
                 color: "black"
             }
-        }
+        },
+        //'visualVariables allow you to change the symbol's style of the data-points presented. This one changes the size of the points based on population size. The larger the population, the larger the marker.
+        visualVariables:[
+            {
+            type: 'size',
+            field: "POPULATION",
+            minDataValue: 10000,
+            maxDataValue: 8000000,
+            minSize: 4,
+            maxSize: 22
+
+            }
+        ]
     }
+
+    
     
     // Feature layer focusing on major cities in the US.
     //update: added a popupTemplate. I would like to modify it a bit later.
@@ -78,11 +91,13 @@ require(["esri/config",
     });
     
     //this function will change the 'definitionExpression' key in the 'majorCities' object
+    //note: I had this as an arrow function originally, but it was giving me problems. Go back and see if there's something I'm missing.
     function setFeatureLayerFilter(expression){
         majorCities.definitionExpression = expression;
     }
 
     //this eventListener is tied to the select-widget in the mapView. The selected choice from that widget will change the 'definitionExpression in the 'majorCities' object to the selected choice.
+    //could I use the 'watch' method here? what would that look like?
     selectFilter.addEventListener("change", (e) => {
         setFeatureLayerFilter(e.target.value);
     });
