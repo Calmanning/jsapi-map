@@ -12,7 +12,7 @@ require(["esri/config",
     
     
     const map = new Map({
-          basemap: "streets-vector",
+          basemap: "gray-vector",
         });
 
         
@@ -45,7 +45,7 @@ require(["esri/config",
         "type": "simple",
         symbol: {
             type: "simple-marker",
-            color: "green",
+            color: "white",
             outline: {
                 width: 0.5,
                 color: "black"
@@ -65,9 +65,14 @@ require(["esri/config",
         ]
     }
 
-    
-    
-    // Feature layer focusing on major cities in the US.
+    //A feature layer highlighting the areas of risk in the United States.
+    const riskIndex = new FeatureLayer({
+        url: "https://services.arcgis.com/XG15cJAlne2vxtgt/arcgis/rest/services/National_Risk_Index_Counties/FeatureServer",
+        opacity: 0.8
+    })
+    view.map.add(riskIndex,0)
+
+    // Another Feature layer focusing on major cities in the US. Will be added on top of the risk index layer.
     //update: added a popupTemplate. I would like to modify it a bit later.
     //the 'definitionExpression' key is what acts as the SQL query. The featureLayer's data is filtered by that expression as it's rendered top the map. 
     const majorCities = new FeatureLayer({
@@ -79,10 +84,11 @@ require(["esri/config",
         },
         definitionExpression: "POPULATION > 1000000",
         renderer: citiesRenderer,
-        opacity: 0.5,
+        opacity: 0.7,
         visible: true
     });
-    view.map.add(majorCities, 0);
+    view.map.add(majorCities, 1);
+
     
     //a simple basemap-toggle-widget. Not surving much of a function, except for an asthetic change.
     let toggle = new BasemapToggle({
