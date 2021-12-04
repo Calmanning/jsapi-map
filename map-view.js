@@ -24,7 +24,9 @@ require(["esri/config",
     });
     
     //a SQL 'where' expression that currently has two uses - 1. It is the used to generate an option in a select widget in the top-right of the map-view. 2. It is the SQL query expression that will filter the data in the featureLayer('majorCities'). 
-    const sqlExp = ["POPULATION > 1000000", "POPULATION < 10000"];
+
+    
+    const sqlExp = ["POPULATION > 1000000", "POPULATION < 10000", "POPULATION > 0"];
 
     //creating a html element in dom. This creates the select-filter expression widget
     const selectFilter = document.createElement("select");
@@ -56,7 +58,7 @@ require(["esri/config",
             {
             type: 'size',
             field: "POPULATION",
-            minDataValue: 10000,
+            minDataValue: 9000,
             maxDataValue: 8000000,
             minSize: 8,
             maxSize: 25
