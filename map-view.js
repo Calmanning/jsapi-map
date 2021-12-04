@@ -47,8 +47,8 @@ require(["esri/config",
             type: "simple-marker",
             color: "white",
             outline: {
-                width: 0.5,
-                color: "black"
+                width: 1,
+                color: "white"
             }
         },
         //'visualVariables allow you to change the symbol's style of the data-points presented. This one changes the size of the points based on population size. The larger the population, the larger the marker.
@@ -58,9 +58,18 @@ require(["esri/config",
             field: "POPULATION",
             minDataValue: 10000,
             maxDataValue: 8000000,
-            minSize: 4,
-            maxSize: 22
+            minSize: 8,
+            maxSize: 25
 
+            }, 
+            //added a second visual variable. A color gradient that changes depending on the median age variable. not the best choice for a map that is already so colorful...maybe if we could toggle the layers?
+            {
+            type: "color",
+            field: "MED_AGE",
+            stops: [
+                { value: 20, color: "black" },
+                { value: 50, color: "orange" }
+                ]
             }
         ]
     }
@@ -80,7 +89,8 @@ require(["esri/config",
         outfields: ["*"],
         popupTemplate: {
             title: "{NAME}",
-            content: "Population: {POPULATION}"
+            content: `Population: {POPULATION}
+            Median Age: {MED_AGE}`
         },
         definitionExpression: "POPULATION > 1000000",
         renderer: citiesRenderer,
