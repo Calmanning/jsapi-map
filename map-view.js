@@ -7,15 +7,15 @@ require(["esri/config",
         "esri/layers/FeatureLayer", 
         "esri/views/ui/UI",
         "esri/widgets/BasemapToggle",
-        "esri/layers/ImageryLayer"
-    ], (esriConfig, Map, MapView, FeatureLayer, UI, BasemapToggle, ImageryLayer) => {
-    
-    
-    const map = new Map({
-          basemap: "gray-vector",
-        });
-
+        "esri/widgets/LayerList"
+    ], (esriConfig, Map, MapView, FeatureLayer, UI, BasemapToggle, LayerList) => {
         
+        
+    const map = new Map({
+        basemap: "gray-vector",
+    });
+    
+    
     const view = new MapView({
         container: "viewDiv",
         map: map,
@@ -23,25 +23,12 @@ require(["esri/config",
         center: [-100, 36]
     });
     
-    //a SQL 'where' expression that currently has two uses - 1. It is the used to generate an option in a select widget in the top-right of the map-view. 2. It is the SQL query expression that will filter the data in the featureLayer('majorCities'). 
-
+    //a simple basemap-toggle-widget. Not surving much of a function, except for an asthetic change.
+    let toggle = new BasemapToggle({
+        view: view,
+        nextBasemap: "dark-gray"
+    });
     
-    const sqlExp = ["POPULATION > 1000000", "POPULATION < 10000", "POPULATION > 0"];
-
-    //creating a html element in dom. This creates the select-filter expression widget
-    const selectFilter = document.createElement("select");
-        selectFilter.setAttribute("class", "esri-widget esri-select");
-        selectFilter.setAttribute("style", "width: 275px; font-family Avenir Next W00; font-size: 1em;")
-
-    //seeting up the select-filter-widget with options(choices) based on the existing entries in the 'sqlExp' array. 
-    sqlExp.forEach(sql => {
-        let option = document.createElement("option");
-        option.value = sql;
-        option.innerHTML = sql;
-        selectFilter.appendChild(option);
-    })
-
-
     // renderer that will style the information from the "majorCities" featureLayer. Remember to call out the renderer in the FeatureLayer object.
     const citiesRenderer = {
         "type": "simple",
@@ -59,9 +46,9 @@ require(["esri/config",
             type: 'size',
             field: "POPULATION",
             minDataValue: 9000,
-            maxDataValue: 8000000,
+            maxDataValue: 5000000,
             minSize: 8,
-            maxSize: 25
+            maxSize: 35
 
             }, 
             //added a second visual variable. A color gradient that changes depending on the median age variable. not the best choice for a map that is already so colorful...maybe if we could toggle the layers?
@@ -101,12 +88,25 @@ require(["esri/config",
     });
     view.map.add(majorCities, 1);
 
-    
-    //a simple basemap-toggle-widget. Not surving much of a function, except for an asthetic change.
-    let toggle = new BasemapToggle({
-        view: view,
-        nextBasemap: "dark-gray"
+    let layerList = new LayerList({
+        view:view
     });
+
+    //a SQL 'where' expression that currently has two uses - 1. It is the used to generate an option in a select widget in the top-right of the map-view. 2. It is the SQL query expression that will filter the data in the featureLayer('majorCities'). 
+    const sqlExp = ["POPULATION > 1000000", "POPULATION < 10000", "POPULATION > 0"];
+
+    //creating a html element in dom. This creates the select-filter expression widget
+    const selectFilter = document.createElement("select");
+        selectFilter.setAttribute("class", "esri-widget esri-select");
+        selectFilter.setAttribute("style", "width: 275px; font-family Avenir Next W00; font-size: 1em;")
+
+    //seeting up the select-filter-widget with options(choices) based on the existing entries in the 'sqlExp' array. 
+    sqlExp.forEach(sql => {
+        let option = document.createElement("option");
+        option.value = sql;
+        option.innerHTML = sql;
+        selectFilter.appendChild(option);
+    })
     
     //this function will change the 'definitionExpression' key in the 'majorCities' object
     //note: I had this as an arrow function originally, but it was giving me problems. Go back and see if there's something I'm missing.
@@ -125,6 +125,10 @@ require(["esri/config",
 
     //adding the select-filter-widget to the mapView
     view.ui.add(selectFilter, "top-right")
+
+     view.ui.add(layerList, {
+        position: "top-right"
+    });
 
 
 });
