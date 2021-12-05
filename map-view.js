@@ -79,9 +79,10 @@ require(["esri/config",
         popupTemplate: {
             title: "{NAME}",
             content: `Population: {POPULATION}
-            Median Age: {MED_AGE}`
+                        <br>
+                      Median Age: {MED_AGE}`
         },
-        definitionExpression: "POPULATION > 1000000",
+        definitionExpression: "POPULATION > 0",
         renderer: citiesRenderer,
         opacity: 0.7,
         visible: true
@@ -93,10 +94,11 @@ require(["esri/config",
     });
 
     //a SQL 'where' expression that currently has two uses - 1. It is the used to generate an option in a select widget in the top-right of the map-view. 2. It is the SQL query expression that will filter the data in the featureLayer('majorCities'). 
-    const sqlExp = ["POPULATION > 1000000", "POPULATION < 10000", "POPULATION > 0"];
+    const sqlExp = ["Select Population Threshold", "City Population Above 1,000,000", "City Population Below 10,000", "All Major Cities"];
 
     //creating a html element in dom. This creates the select-filter expression widget
-    const selectFilter = document.createElement("select");
+    const selectFilter = 
+        document.createElement("select");
         selectFilter.setAttribute("class", "esri-widget esri-select");
         selectFilter.setAttribute("style", "width: 275px; font-family Avenir Next W00; font-size: 1em;")
 
@@ -117,14 +119,21 @@ require(["esri/config",
     //this eventListener is tied to the select-widget in the mapView. The selected choice from that widget will change the 'definitionExpression in the 'majorCities' object to the selected choice.
     //could I use the 'watch' method here? what would that look like?
     selectFilter.addEventListener("change", (e) => {
-        setFeatureLayerFilter(e.target.value);
+        if(e.target.value === "All Major Cities"){
+                return setFeatureLayerFilter("POPULATION > 0");
+        } else if (e.target.value === "City Population Below 10,000"){
+            return setFeatureLayerFilter("POPULATION < 10000");
+        } else if (e.target.value === "City Population Above 1,000,000"){
+            return setFeatureLayerFilter("POPULATION > 1000000");
+        }
+        // setFeatureLayerFilter(e.target.value);
     });
     
     //adding the basemap-toggle-widget to the mapView.
     view.ui.add(toggle, "bottom-right");
 
     //adding the select-filter-widget to the mapView
-    view.ui.add(selectFilter, "top-right")
+    view.ui.add(selectFilter, "top-left")
 
      view.ui.add(layerList, {
         position: "top-right"
